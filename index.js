@@ -15,8 +15,7 @@ const http = require('http');
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/group01/sms/incoming', (req, res) => {
-  console.log('request: ', req);
-  console.log('response: ', res);
+  console.log(req.body.Body);
 
   client.messages
     .create({
@@ -25,8 +24,6 @@ app.post('/group01/sms/incoming', (req, res) => {
              to: accountPhoneNumber,
            })
     .then(message => console.log(message));
-  });
-
 
   client.messages
     .create({
@@ -35,7 +32,7 @@ app.post('/group01/sms/incoming', (req, res) => {
              to: '+14082562523',
            })
     .then(message => console.log(message));
-  });
+});
 
 http.createServer(app).listen(port, () => {
     console.log(`Express server listening on port ${port}`);
