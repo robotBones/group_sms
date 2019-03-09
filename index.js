@@ -11,6 +11,7 @@ const app = require('express')();
 const bodyParser = require('body-parser');
 const client = require('twilio')(accountSid, authToken);
 const http = require('http');
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -20,18 +21,15 @@ app.post('/group01/sms/incoming', (req, res) => {
   client.messages
     .create({
              body: 'test message from the island',
-             from: '+1234567890',
-             to: accountPhoneNumber,
-           })
-    .then(message => console.log(message));
-
-  client.messages
-    .create({
-             body: 'test message from the island',
-             from: '+1234567890',
+             from: accountPhoneNumber,
              to: '+14082562523',
            })
     .then(message => console.log(message));
+
+  const twiml = new MessagingResponse();
+  twiml.message('twiml');
+
+  res.end(twiml.toString());
 });
 
 http.createServer(app).listen(port, () => {
