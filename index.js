@@ -16,7 +16,7 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse;
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/group01/sms/incoming', (req, res) => {
-  console.log(req.body.Body);
+  console.log(req.body);
 
   client.messages
     .create({
@@ -26,10 +26,7 @@ app.post('/group01/sms/incoming', (req, res) => {
            })
     .then(message => console.log(message));
 
-  const twiml = new MessagingResponse();
-  twiml.message('twiml');
-
-  res.end(twiml.toString());
+  res.end();
 });
 
 http.createServer(app).listen(port, () => {
