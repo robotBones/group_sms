@@ -2,7 +2,7 @@
 
 require('dotenv').load();
 
-import persons from 'persons';
+const persons = require('./persons');
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -19,16 +19,43 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/group01/sms/incoming', (req, res) => {
   const phoneNumber = req.body.From;
-  const person = persons.find( {phoneNumber} );
+  const sms = req.body.Body;
+  const person = persons.find( {phoneNumber} )[0];
   console.log(JSON.stringify(person));
 
-  client.messages
-    .create({
-             body: 'test message from the island',
-             from: accountPhoneNumber,
-             to: '+14082562523',
-           })
-    .then(message => console.log(message));
+  if (!person) {
+    persons.insert({phoneNumber});
+    client.messages
+      .create({
+	     body: 'You\'re new. Before you join, what is your name?',
+	     from: accountPhoneNumber,
+	     to: phoneNumber,
+	   })
+      .then(message => console.log(message.body));
+  }
+  else if (!person.name) {
+    person.name = sms;
+    client.messages
+      .create({
+	     body: `Hello, ${sms}!`,
+	     from: accountPhoneNumber,
+	     to: phoneNumber,
+	   })
+      .then(message => console.log('new name is:', sms));
+  }
+  else {
+    const broadcast = `${person.name} says ${sms}`;
+    persons.find().forEach(person => {
+    if (person.phoneNumber === phoneNumber) return;
+    client.messages
+      .create({
+	     body: broadcast,
+	     from: accountPhoneNumber,
+	     to: person.phoneNumber,
+	   })
+      .then(message => console.log(`${broadcast} to ${person.phoneNumber}`));
+    });
+  }
 
   res.end();
 });
