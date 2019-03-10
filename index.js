@@ -2,6 +2,8 @@
 
 require('dotenv').load();
 
+import persons from 'persons';
+
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const accountPhoneNumber = process.env.TWILIO_NUMBER;
@@ -16,7 +18,9 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse;
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/group01/sms/incoming', (req, res) => {
-  console.log(req.body);
+  const phoneNumber = req.body.From;
+  const person = persons.find( {phoneNumber} );
+  console.log(JSON.stringify(person));
 
   client.messages
     .create({
