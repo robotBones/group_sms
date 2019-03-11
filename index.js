@@ -17,11 +17,10 @@ const MessagingResponse = require('twilio').twiml.MessagingResponse;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post('/group01/sms/incoming', (req, res) => {
+app.post('/sms/incoming', (req, res) => {
   const phoneNumber = req.body.From;
   const sms = req.body.Body;
   const person = persons.find( {phoneNumber} )[0];
-  console.log(JSON.stringify(person));
 
   if (!person) {
     persons.insert({phoneNumber});
